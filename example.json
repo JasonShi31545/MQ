@@ -1,0 +1,13 @@
+{
+    "elapsed": "time",
+    "items": [
+    {
+        "term": "term",
+        "def": "def",
+        "mastery": 0,
+        "corrects": 0,
+        "mistakes": 0,
+        "correct_elapse": "time"
+    }
+    ]
+}
