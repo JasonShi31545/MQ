@@ -70,6 +70,9 @@ struct Set {
         size = 0;
         elapsed_open = std::nullopt;
     }
+    ~Set() {
+        free(items);
+    }
 };
 
 class MCQ{
@@ -159,8 +162,18 @@ Item ParseItem(std::unordered_map<std::string, std::any> itemdata) {
     return item;
 }
 
-// Set ParseSet(SetUnwrapped setdata) {
+Set ParseSet(SetUnwrapped setdata) {
+    Set set{};
+    set.items = (Item *)malloc(sizeof(Item) * setdata.second.size());
+    set.size = setdata.second.size();
+    set.elapsed_open = setdata.first;
 
-// }
+    for (int i = 0; i < setdata.second.size(); i++) {
+        auto mapping = setdata.second[i];
+        set.items[i] = ParseItem(mapping);
+    }
+
+    return set;
+}
 
 #endif // QUIZ_H
