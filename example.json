@@ -1,5 +1,5 @@
 {
-    "elapsed": "time",
+    "elapsed-since": "time",
     "items": [
     {
         "term": "term",
@@ -7,7 +7,7 @@
         "mastery": 0,
         "corrects": 0,
         "mistakes": 0,
-        "correct_elapse": "time"
+        "ces": "time"
     }
     ]
 }
