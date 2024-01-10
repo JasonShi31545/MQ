@@ -162,18 +162,18 @@ Item ParseItem(std::unordered_map<std::string, std::any> itemdata) {
     return item;
 }
 
-Set ParseSet(SetUnwrapped setdata) {
-    Set set{};
-    set.items = (Item *)malloc(sizeof(Item) * setdata.second.size());
-    set.size = setdata.second.size();
-    set.elapsed_open = setdata.first;
+Set *ParseSet(SetUnwrapped setdata) { // remember to wrap the return value in a std::unique_ptr or remember to delete
+    Set *_set = new Set{};
+    _set->items = (Item *)malloc(sizeof(Item) * setdata.second.size());
+    _set->size = setdata.second.size();
+    _set->elapsed_open = setdata.first;
 
     for (int i = 0; i < setdata.second.size(); i++) {
         auto mapping = setdata.second[i];
-        set.items[i] = ParseItem(mapping);
+        _set->items[i] = ParseItem(mapping);
     }
 
-    return set;
+    return _set;
 }
 
 #endif // QUIZ_H
