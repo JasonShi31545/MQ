@@ -4,10 +4,11 @@
     {
         "term": "term",
         "def": "def",
-        "mastery": 0,
+        "mastery": false,
         "corrects": 0,
         "mistakes": 0,
-        "ces": "time"
+        "ces": "time",
+        "nes": "time"
     }
     ]
 }

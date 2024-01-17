@@ -12,6 +12,7 @@
 #include <string>
 #include <utility>
 #include <any>
+#include <random>
 #include "nlohmann/json.hpp"
 #include <fstream>
 #include <typeinfo>
@@ -55,10 +56,12 @@ typedef enum: int {
 typedef struct {
     std::string term;
     std::string def;
-    unsigned int mastery;
+    bool mastery;
+    float priority;
     unsigned int corrects;
     unsigned int mistakes;
     std::optional<std::time_t> elapsed_correct;
+    std::optional<std::time_t> elapsed;
 } Item;
 
 struct Set {
@@ -143,6 +146,7 @@ SetUnwrapped ParseJSON(json jsdata) {
             {"corrects", jsdata["items"][i]["corrects"]},
             {"mistakes", jsdata["items"][i]["corrects"]},
             {"ces", jsdata["items"][i]["ces"]},
+            {"nes", jsdata["items"][i]["nes"]},
         });
     }
     return res;
@@ -152,13 +156,16 @@ Item ParseItem(std::unordered_map<std::string, std::any> itemdata) {
     Item item;
     item.term = std::any_cast<std::string>(itemdata["term"]);
     item.def = std::any_cast<std::string>(itemdata["def"]);
-    item.mastery = std::any_cast<unsigned int>(itemdata["mastery"]);
+    item.mastery = std::any_cast<bool>(itemdata["mastery"]);
+    item.priority = std::any_cast<float>(itemdata["priority"]);
     item.corrects = std::any_cast<unsigned int>(itemdata["corrects"]);
     item.mistakes = std::any_cast<unsigned int>(itemdata["mistakes"]);
     //item.elapsed_correct = std::any_cast<>(itemdata["term"]);
-    std::optional<std::time_t> t = ParseTimeFromString(std::any_cast<std::string>(itemdata["ces"]));
-    if (!t.has_value()) throw TimeFormatException();
-    item.elapsed_correct = t;
+    std::optional<std::time_t> ces = ParseTimeFromString(std::any_cast<std::string>(itemdata["ces"]));
+    std::optional<std::time_t> nes = ParseTimeFromString(std::any_cast<std::string>(itemdata["nes"]));
+    if (!ces.has_value() || !nes.has_value()) throw TimeFormatException();
+    item.elapsed_correct = ces;
+    item.elapsed = nes;
     return item;
 }
 
@@ -174,6 +181,76 @@ Set *ParseSet(SetUnwrapped setdata) { // remember to wrap the return value in a 
     }
 
     return _set;
+}
+
+int *random_int(int upperbound, int n) {
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<> distrib(0, upperbound);
+    assert(n > 0);
+    int *nums = (int *)malloc(sizeof(int) * n);
+    for (int i = 0; i < n; i++) {
+        nums[i] = distrib(gen);
+    }
+    return nums;
+}
+
+std::tuple<int, int, int> getThree(int upperbound, int except = -1) {
+    int *rands;
+    auto check = [&rands, &except]() -> bool {
+        if (!rands) return true;
+        for (int i = 0; i < 3; i++) {
+            if (rands[i] == except) return true;
+        }
+        return false;
+    };
+    do {
+        rands = random_int(upperbound, 3);
+    } while (check());
+    std::tuple<int, int, int> res = {rands[0], rands[1], rands[2]};
+    free(rands);
+    return res;
+}
+
+std::time_t GetTimeNow() {
+    return std::time(0);
+}
+
+float CalculatePriority(const Set &set, const Item item) { // TODO: Implement this shit
+    std::optional<std::time_t> e, ec;
+    e = item.elapsed;
+    ec = item.elapsed_correct;
+
+    std::time_t t_delta;
+    if (set.elapsed_open.has_value()) {
+        t_delta = GetTimeNow() - set.elapsed_open.value();
+    }
+
+    if (e.has_value() && !ec.has_value()) {
+        // no correct trials, it's really bad
+
+    } else if (e.has_value() && ec.has_value()) {
+        // has correct trials
+        if (e.value() == ec.value()) {
+            // the last time was correct
+        } else {
+            // was not
+        }
+    }
+    // has never seen it
+    return 0.5f;
+}
+
+struct CompareItem {
+    bool operator()(Item const &i1, Item const &i2) {
+        return i1.priority < i2.priority;
+    }
+};
+
+std::unique_ptr<std::priority_queue<Item, std::vector<Item>, CompareItem>> InstantiateQueueForSet(const Set &set) {
+    std::priority_queue<Item, std::vector<Item>, CompareItem> *pq;
+    pq = new std::priority_queue<Item, std::vector<Item>, CompareItem>();
+    return std::unique_ptr<std::priority_queue<Item, std::vector<Item>, CompareItem>>(pq);
 }
 
 #endif // QUIZ_H
