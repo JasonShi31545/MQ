@@ -216,25 +216,43 @@ std::time_t GetTimeNow() {
     return std::time(0);
 }
 
-float CalculatePriority(const Set &set, const Item item) { // TODO: Implement this shit
+float MySigmoid(float n) {
+    const float a = 0.1;
+    return 1.0f/(1.0f + expf(-a * n));
+}
+
+void SetDefaultTiming(Set *set) {
+    set->elapsed_open = GetTimeNow();
+}
+
+float CalculatePriority(const Set &set, const Item item) {
     std::optional<std::time_t> e, ec;
     e = item.elapsed;
     ec = item.elapsed_correct;
 
-    std::time_t t_delta;
+
     if (set.elapsed_open.has_value()) {
-        t_delta = GetTimeNow() - set.elapsed_open.value();
+        if (e.has_value()) {
+            e = e.value() - set.elapsed_open.value();
+        }
+        if (ec.has_value()) {
+            ec = ec.value() - set.elapsed_open.value();
+        }
+    } else {
+        throw DataNotFoundException("elapsed date not found");
     }
 
     if (e.has_value() && !ec.has_value()) {
         // no correct trials, it's really bad
-
+        return MySigmoid(item.mistakes * item.mistakes + 2.0f*e.value());
     } else if (e.has_value() && ec.has_value()) {
         // has correct trials
         if (e.value() == ec.value()) {
             // the last time was correct
+            return MySigmoid(item.mistakes / 2.0f + 0.5f*ec.value());
         } else {
             // was not
+            return MySigmoid(item.mistakes + 1.5f*ec.value());
         }
     }
     // has never seen it
@@ -252,5 +270,7 @@ std::unique_ptr<std::priority_queue<Item, std::vector<Item>, CompareItem>> Insta
     pq = new std::priority_queue<Item, std::vector<Item>, CompareItem>();
     return std::unique_ptr<std::priority_queue<Item, std::vector<Item>, CompareItem>>(pq);
 }
+
+
 
 #endif // QUIZ_H
