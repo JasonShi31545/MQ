@@ -234,9 +234,11 @@ float CalculatePriority(const Set &set, const Item item) {
     if (set.elapsed_open.has_value()) {
         if (e.has_value()) {
             e = e.value() - set.elapsed_open.value();
+            e = e.value()/1000;
         }
         if (ec.has_value()) {
             ec = ec.value() - set.elapsed_open.value();
+            ec = e.value()/1000;
         }
     } else {
         throw DataNotFoundException("elapsed date not found");
