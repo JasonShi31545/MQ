@@ -21,10 +21,7 @@ int main(int argc, const char *argv[]) {
     // cout << data["items"][0]["mistakes"] << endl;
     // cout << data["items"][0]["correct_elapse"] << endl;
 
-    auto res = GetJSONFromFile("example.json");
 
-    cout << res.value()["elapsed"] << endl;
-    cout << res.has_value() << endl;
 
     return 0;
 }
