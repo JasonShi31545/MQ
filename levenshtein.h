@@ -44,15 +44,14 @@ int levenshteinTwoMatrixRows(const string& str1,
 	return currRow[n];
 }
 
-// Drivers code
-int main()
-{
-	string str1 = "kitten";
-	string str2 = "sitting";
+// // Drivers code
+// int main()
+// {
+// 	string str1 = "kitten";
+// 	string str2 = "sitting";
 
-	// Function Call
-	int distance = levenshteinTwoMatrixRows(str1, str2);
-	cout << "Levenshtein Distance: " << distance;
-	return 0;
-}
-
+// 	// Function Call
+// 	int distance = levenshteinTwoMatrixRows(str1, str2);
+// 	cout << "Levenshtein Distance: " << distance;
+// 	return 0;
+// }

@@ -14,6 +14,7 @@
 #include <any>
 #include <random>
 #include "nlohmann/json.hpp"
+#include "levenshtein.h"
 #include <fstream>
 #include <typeinfo>
 #include <SDL2/SDL.h>
