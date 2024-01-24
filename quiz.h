@@ -67,16 +67,23 @@ typedef struct {
 
 struct Set {
     Item *items;
-    size_t size;
     std::optional<std::time_t> elapsed_open;
     Set() {
         items = nullptr;
-        size = 0;
+        _size = 0;
         elapsed_open = std::nullopt;
     }
     ~Set() {
         free(items);
     }
+    size_t size() const {
+        return _size;
+    }
+    void setSize(size_t s) {
+        _size = s;
+    }
+private:
+    size_t _size;
 };
 
 class MCQ{
@@ -173,7 +180,7 @@ Item ParseItem(std::unordered_map<std::string, std::any> itemdata) {
 Set *ParseSet(SetUnwrapped setdata) { // remember to wrap the return value in a std::unique_ptr or remember to delete
     Set *_set = new Set{};
     _set->items = (Item *)malloc(sizeof(Item) * setdata.second.size());
-    _set->size = setdata.second.size();
+    _set->setSize(setdata.second.size());
     _set->elapsed_open = setdata.first;
 
     for (int i = 0; i < setdata.second.size(); i++) {
@@ -274,6 +281,48 @@ std::unique_ptr<std::priority_queue<Item, std::vector<Item>, CompareItem>> Insta
     return std::unique_ptr<std::priority_queue<Item, std::vector<Item>, CompareItem>>(pq);
 }
 
+
+typedef std::unique_ptr<std::priority_queue<Item, std::vector<Item>, CompareItem>> QuizPQ;
+
+MCQ *QuestionMCQ(QuizPQ pq, const Set &set, Direction d) {
+    Item citem = pq->top();
+    MCQ *mcq = new MCQ();
+    int *random_id = random_int(3, 1);
+    mcq->correctID = *random_id;
+    mcq->direction = d;
+    assert(set.size() > 4);
+    int *more = NULL;
+    while (true) {
+        more = random_int(set.size(), 3);
+        for (int i = 0; i < 3; i++) {
+            if (more[i] == mcq->correctID) {
+                free(more);
+                more = NULL;
+                continue;
+            }
+        }
+        break;
+    }
+    assert(more != NULL);
+    mcq->choices[mcq->correctID] = citem;
+    int j = 0;
+    for (int i = 0; i < 4; i++) {
+        if (i == mcq->correctID) continue;
+        mcq->choices[i] = set.items[more[j++]];
+    }
+    free(more);
+    free(random_id);
+    pq->pop();
+    return mcq;
+}
+
+ERQ *QuestionERQ(QuizPQ pq, const Set &set, Direction d) {
+    Item citem = pq->top();
+    pq->pop();
+    ERQ *erq = new ERQ();
+    erq->correctItem = citem;
+    return erq;
+}
 
 
 #endif // QUIZ_H
