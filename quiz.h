@@ -292,17 +292,17 @@ MCQ *QuestionMCQ(QuizPQ pq, const Set &set, Direction d) {
     mcq->direction = d;
     assert(set.size() > 4);
     int *more = NULL;
-    while (true) {
-        more = random_int(set.size(), 3);
-        for (int i = 0; i < 3; i++) {
-            if (more[i] == mcq->correctID) {
-                free(more);
-                more = NULL;
-                continue;
-            }
+
+BACK:
+    more = random_int(set.size(), 3);
+    for (int i = 0; i < 3; i++) {
+        if (more[i] == mcq->correctID) {
+            free(more);
+            more = NULL;
+            goto BACK;
         }
-        break;
     }
+
     assert(more != NULL);
     mcq->choices[mcq->correctID] = citem;
     int j = 0;
