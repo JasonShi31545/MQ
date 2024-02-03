@@ -1,14 +1,23 @@
 {
-    "elapsed-since": "time",
-    "items": [
+  "elapsed-since": "2024/01/01 00:00:01",
+  "items": [
     {
-        "term": "term",
-        "def": "def",
-        "mastery": false,
-        "corrects": 0,
-        "mistakes": 0,
-        "ces": "time",
-        "nes": "time"
+      "term": "term1",
+      "def": "def1",
+      "mastery": false,
+      "corrects": 1,
+      "mistakes": 0,
+      "ces": "2024/01/01 23:59:59",
+      "nes": "2024/01/01 23:59:59"
+    },
+    {
+      "term": "term2",
+      "def": "def2",
+      "mastery": false,
+      "corrects": 0,
+      "mistakes": 0,
+      "ces": "2024/01/01 23:59:58",
+      "nes": "2024/01/01 23:59:58"
     }
-    ]
+  ]
 }

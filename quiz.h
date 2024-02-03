@@ -6,6 +6,7 @@
 #include <cstdio>
 #include <vector>
 #include <chrono>
+#include <cstring>
 #include <queue>
 #include <ctime>
 #include <optional>
@@ -323,6 +324,8 @@ ERQ *QuestionERQ(QuizPQ pq, const Set &set, Direction d) {
     erq->correctItem = citem;
     return erq;
 }
+
+
 
 
 #endif // QUIZ_H
