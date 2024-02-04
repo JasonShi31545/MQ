@@ -1,4 +1,5 @@
 #include "quiz.h"
+#include "welcome.h"
 #include "raylib.h"
 using namespace std;
 
@@ -13,74 +14,75 @@ int main(int argc, const char *argv[]) {
     InitWindow(width, height, "MQ");
     InitAudioDevice();
     SetConfigFlags(FLAG_MSAA_4X_HINT);
-    float offset = 0.0f;
 
-    const float RECT_WIDTH = 200;
-    const float RECT_HEIGHT = 100;
 
     // Sound
-    Music bgm = LoadMusicStream("resources/effect.ogg");
-    PlayMusicStream(bgm);
+    Music bgm1 = LoadMusicStream("resources/effect.ogg");
+    SetMasterVolume(50);
+    PlayMusicStream(bgm1);
 
     Sound hoverSound = LoadSound("resources/select.ogg");
+    Sound clickSound = LoadSound("resources/click.ogg");
+    bool hovers = false;
+    bool hovers2 = false;
+    bool clicked = false;
 
-    bool rect_hovers[4] = {false, false, false, false};
-
-    Rectangle rect1;
-    Rectangle rect2;
-    Rectangle rect3;
-    Rectangle rect4;
-    Rectangle *rects[4] = {&rect1, &rect2, &rect3, &rect4};
-    Color colours[4] = {RED, GREEN, YELLOW, BLUE};
-
-    int mouseClickID = -1;
-    char a[20] = "Default";
-    int text_x = 0, text_y = 0;
     while (!WindowShouldClose()) {
-        rect1 = {width / 2 - RECT_WIDTH - 5,height / 2, RECT_WIDTH, RECT_HEIGHT - offset};
-        rect2 = {width / 2,height / 2, RECT_WIDTH - offset, RECT_HEIGHT};
-        rect3 = {width / 2,height / 2 + (RECT_HEIGHT + 5), RECT_WIDTH + offset, RECT_HEIGHT};
-        rect4 = {width / 2 - RECT_WIDTH - 5,height / 2 + (RECT_HEIGHT + 5), RECT_WIDTH + offset, RECT_HEIGHT};
-        UpdateMusicStream(bgm);
-        BeginDrawing();
-            ClearBackground(RAYWHITE);
-            DrawText("MQ: Learning Sets", width/2 - (RECT_HEIGHT + 5), height / 5, 22, BLACK);
-
-            for (int i = 0; i < 4; i++) {
-                DrawRectangleRounded(*rects[i], 0.45, 10, rect_hovers[i] ?  Fade(colours[i], 0.8f) : colours[i]);
-            }
-
-            if (mouseClickID != -1) {
-                sprintf(a, "Clicked %d", mouseClickID);
-                text_x = rects[mouseClickID]->x;
-                text_y = rects[mouseClickID]->y;
-            }
-            DrawText(a, text_x, text_y, 22, BLACK);
-        EndDrawing();
         if (IsKeyDown(KEY_Q)) {
             break;
         }
+        UpdateMusicStream(bgm1);
 
-        for (int i = 0; i < 4; i++) {
-            if (CheckCollisionPointRec(GetMousePosition(), *rects[i])) {
-                if (!rect_hovers[i]) {
+        if (!clicked) {
+            BeginDrawing();
+            ClearBackground(RAYWHITE);
+            DrawText("MQ: Learning Sets", width/2 - (110), height / 5, 22, BLACK);
+            DrawText("Begin", width / 2 - 25, height / 2, 22, hovers ? Fade(BLACK, 0.5f) : BLACK);
+            DrawText("Quit", width / 2 - 25, height / 2 + 30, 22, hovers2 ? Fade(BLACK, 0.5f) : BLACK);
+            EndDrawing();
+
+            if (CheckCollisionPointRec(GetMousePosition(), (Rectangle){width/2 - 25,height/2 + 30,40,20})) {
+                if (!hovers2) {
                     PlaySound(hoverSound);
                 }
-                rect_hovers[i] = true;
+                hovers2 = true;
                 if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
-                    mouseClickID = i;
-                } else {
-                    mouseClickID = -1;
+                    break;
                 }
             } else {
-                rect_hovers[i] = false;
+                hovers2 = false;
             }
+            if (CheckCollisionPointRec(GetMousePosition(), (Rectangle){width/2 - 25,height/2,40,20})) {
+                if (!hovers) {
+                    PlaySound(hoverSound);
+                }
+                hovers = true;
+                if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+                    printf("Clicked!\n");
+                    clicked = true;
+                    PlaySound(clickSound);
+                }
+            } else {
+                hovers = false;
+            }
+
+        } else {
+            // display(width, height);
+            goto DISP;
+
         }
-        offset = 5.5f*sinf(GetTime());
     }
-    StopMusicStream(bgm);
-    UnloadMusicStream(bgm);
+    goto END;
+DISP:
+    display(width, height);
+
+
+END:
+
+    StopMusicStream(bgm1);
+    UnloadMusicStream(bgm1);
     UnloadSound(hoverSound);
+    UnloadSound(clickSound);
     CloseAudioDevice();
     CloseWindow();
 
