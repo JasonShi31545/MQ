@@ -1,7 +1,7 @@
-quiz: quiz.cc
-	clang++ -Wall quiz.cc -ggdb -O0 -o prog.out -lm libraylib.a
+CC=clang++
+CPPFLAGS=-std=c++17 -Wall -Wpedantic -Wshadow -g -fsanitize=address -fsanitize=undefined -D_GLIBCXX_DEBUG -O0 -Wno-unused-result -lm -lraylib
+%: %.cc
+	$(CC) $(CPPFLAGS) $< -o $@.out
 
-static:
-	clang++ -Wall quiz.cc -ggdb -O0 -o prog.out -lm libraylib.a -static
 clean:
-	rm -f prog.out
+	rm -f *.out

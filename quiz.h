@@ -132,7 +132,7 @@ std::optional<std::time_t> ParseTimeFromString(std::string st) {
     timestruct.tm_sec = ss;
     timestruct.tm_isdst = -1;
     time = mktime(&timestruct);
-    std::cout << time << std::endl;
+    // std::cout << time << std::endl;
     return time;
 }
 
@@ -147,34 +147,67 @@ SetUnwrapped ParseJSON(json jsdata) {
     if (jsdata.find("items") == jsdata.end()) {
         throw DataNotFoundException(std::string("Item Not Found"));
     }
+
+    res.first = time.value();
     for (int i = 0; i < jsdata["items"].size(); i++) {
         res.second.push_back({
-            {"term", jsdata["items"][i]["term"]},
-            {"def", jsdata["items"][i]["def"]},
-            {"mastery", jsdata["items"][i]["mastery"]},
-            {"corrects", jsdata["items"][i]["corrects"]},
-            {"mistakes", jsdata["items"][i]["corrects"]},
-            {"ces", jsdata["items"][i]["ces"]},
-            {"nes", jsdata["items"][i]["nes"]},
+            {"term", std::any(static_cast<std::string>(jsdata["items"][i]["term"]))},
+            {"def", std::any(static_cast<std::string>(jsdata["items"][i]["def"]))},
+            {"mastery", std::any(static_cast<bool>(jsdata["items"][i]["mastery"]))},
+            {"priority", std::any(static_cast<float>(jsdata["items"][i]["priority"]))},
+            {"corrects", std::any(static_cast<unsigned int>(jsdata["items"][i]["corrects"]))},
+            {"mistakes", std::any(static_cast<unsigned int>(jsdata["items"][i]["mistakes"]))},
+            {"ces", std::any(static_cast<std::string>(jsdata["items"][i]["ces"]))},
+            {"nes", std::any(static_cast<std::string>(jsdata["items"][i]["nes"]))},
         });
     }
     return res;
 }
 
 Item ParseItem(std::unordered_map<std::string, std::any> itemdata) {
+
     Item item;
-    item.term = std::any_cast<std::string>(itemdata["term"]);
-    item.def = std::any_cast<std::string>(itemdata["def"]);
-    item.mastery = std::any_cast<bool>(itemdata["mastery"]);
-    item.priority = std::any_cast<float>(itemdata["priority"]);
-    item.corrects = std::any_cast<unsigned int>(itemdata["corrects"]);
-    item.mistakes = std::any_cast<unsigned int>(itemdata["mistakes"]);
+
+    assert(itemdata["term"].has_value());
+    assert(itemdata["def"].has_value());
+    assert(itemdata["mastery"].has_value());
+    assert(itemdata["priority"].has_value());
+    assert(itemdata["corrects"].has_value());
+    assert(itemdata["mistakes"].has_value());
+
+    std::cerr << (itemdata["term"].type().name()) << std::endl;
+    std::cerr << (itemdata["def"].type().name()) << std::endl;
+    std::cerr << (itemdata["mastery"].type().name()) << std::endl;
+    std::cerr << (itemdata["priority"].type().name()) << std::endl;
+    std::cerr << (itemdata["corrects"].type().name()) << std::endl;
+    std::cerr << (itemdata["mistakes"].type().name()) << std::endl;
+
+    // std::cerr << itemdata["term"] << std::endl;
+    // std::cerr << itemdata["def"] << std::endl;
+    // std::cerr << itemdata["mastery"] << std::endl;
+    // std::cerr << itemdata["priority"] << std::endl;
+    // std::cerr << itemdata["corrects"] << std::endl;
+    // std::cerr << itemdata["mistakes"] << std::endl;
+
+    try {
+        item.term = std::any_cast<std::string>(itemdata["term"]);
+        item.def = std::any_cast<std::string>(itemdata["def"]);
+        item.mastery = std::any_cast<bool>(itemdata["mastery"]);
+        item.priority = std::any_cast<float>(itemdata["priority"]);
+        item.corrects = std::any_cast<unsigned int>(itemdata["corrects"]);
+        item.mistakes = std::any_cast<unsigned int>(itemdata["mistakes"]);
+    } catch (const std::bad_any_cast &e) {
+        std::cerr << e.what() << std::endl;
+        throw -1;
+    }
+
     //item.elapsed_correct = std::any_cast<>(itemdata["term"]);
     std::optional<std::time_t> ces = ParseTimeFromString(std::any_cast<std::string>(itemdata["ces"]));
     std::optional<std::time_t> nes = ParseTimeFromString(std::any_cast<std::string>(itemdata["nes"]));
     if (!ces.has_value() || !nes.has_value()) throw TimeFormatException();
     item.elapsed_correct = ces;
     item.elapsed = nes;
+
     return item;
 }
 
@@ -186,7 +219,15 @@ Set *ParseSet(SetUnwrapped setdata) { // remember to wrap the return value in a 
 
     for (int i = 0; i < setdata.second.size(); i++) {
         auto mapping = setdata.second[i];
-        _set->items[i] = ParseItem(mapping);
+        try {
+            Item it = ParseItem(mapping);
+            std::cerr << "nop" << std::endl;
+            _set->items[i] = it;
+        } catch (...) {
+            std::cerr << "Bad data" << std::endl;
+            delete _set;
+            exit(-1);
+        }
     }
 
     return _set;

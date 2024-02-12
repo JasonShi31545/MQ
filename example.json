@@ -7,6 +7,7 @@
       "mastery": false,
       "corrects": 1,
       "mistakes": 0,
+      "priority": 0.0,
       "ces": "2024/01/01 23:59:59",
       "nes": "2024/01/01 23:59:59"
     },
@@ -16,6 +17,7 @@
       "mastery": false,
       "corrects": 0,
       "mistakes": 0,
+      "priority": 0.0,
       "ces": "2024/01/01 23:59:58",
       "nes": "2024/01/01 23:59:58"
     }

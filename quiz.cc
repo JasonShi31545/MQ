@@ -11,6 +11,10 @@ int main(int argc, const char *argv[]) {
     const int height = 550;
 
     SetTargetFPS(144);
+
+    // Anti-aliasing
+    SetConfigFlags(FLAG_MSAA_4X_HINT);
+
     InitWindow(width, height, "MQ");
     InitAudioDevice();
     SetConfigFlags(FLAG_MSAA_4X_HINT);
