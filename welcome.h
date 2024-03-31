@@ -1,4 +1,4 @@
-#include "raylib.h"
+#include <raylib.h>
 
 void display(const float width, const float height) {
     const float RECT_WIDTH = 200;

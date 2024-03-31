@@ -1,6 +1,5 @@
 #include "quiz.h"
 #include "welcome.h"
-#include "raylib.h"
 using namespace std;
 
 int main(int argc, const char *argv[]) {
