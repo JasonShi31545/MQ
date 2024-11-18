@@ -3,5 +3,6 @@ CPPFLAGS=-std=c++17 -Wall -Wpedantic -Wshadow -g -fsanitize=address -fsanitize=u
 %: %.cc
 	$(CC) $(CPPFLAGS) $< -o $@.out
 
+.PHONY: clean
 clean:
 	rm -f *.out
