@@ -98,20 +98,6 @@ int main(void)
         const int mousex = GetMouseX();
         const int mousey = GetMouseY();
 
-        /* for (size_t i = 0; i < 3; i++) { */
-        /*     if (clicks[i]) { */
-        /*         switch (i) { */
-        /*             case 0: // Main Menu */
-
-        /*                 break; */
-        /*             case 1: // Open Set File */
-        /*                 break; */
-        /*             case 2: // Edit Set File */
-        /*                 break; */
-        /*         } */
-        /*     } */
-        /* } */
-
         bool thereareclicks = false;
         for (size_t i = 0; i < MAIN_MENU_OPTION_COUNT; i++) {
             thereareclicks |= clicks[i];
@@ -139,7 +125,8 @@ int main(void)
                         }
                         break;
                     case 3:
-                        goto BREAKOUT;
+                        if (clicks[i])
+                            goto BREAKOUT;
                 }
             }
         } else {
