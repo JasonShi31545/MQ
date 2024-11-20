@@ -1,5 +1,2 @@
 # MQ
-I hate it when quizlet paywalls people
-
-## Dependencies
-nlohmann's JSON parser: [Project Here](https://github.com/nlohmann/json)
+MQ: The ambitious project that seeks to replace Quizlet. Made with <3 using Raylib!
