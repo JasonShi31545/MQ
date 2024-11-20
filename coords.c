@@ -1,4 +1,5 @@
 #include "coords.h"
+#include <raylib.h>
 
 
 
@@ -55,14 +56,15 @@ unsigned char ClampDown(const long _a, const long _b) {
     return (unsigned char) b;
 }
 
-void CreateMenu(const float x, const float y, const char *text, const int fontsize, const Color color) {
+bool CreateMenu(const float x, const float y, const char *text, const int fontsize, const Color color, const float factor) {
     size_t length = strlen(text);
-    Rectangle border = {.x = x, .y = y, .width = length*fontsize*MENU_TEXTBOX_SCALE_FACTOR, .height = 10.0f + fontsize };
+    Rectangle border = {.x = x, .y = y, .width = length*fontsize*factor, .height = 10.0f + fontsize };
     DrawRectangleLinesEx(border, 3.0f, BLACK);
 
     // check for hover
     const int mx = GetMouseX(), my = GetMouseY();
     if (CheckCollision(mx, my, border)) {
+        if (IsMouseButtonReleased(MOUSE_BUTTON_LEFT)) return true;
         unsigned char r,g,b,a;
         r = ClampDown(((long)color.r + 50L), 255L);
         g = ClampDown(((long)color.g + 50L), 255L);
@@ -72,21 +74,24 @@ void CreateMenu(const float x, const float y, const char *text, const int fontsi
     } else {
         DrawText(text, x+10, y+5, fontsize, color);
     }
+    return false;
 }
 
-void CreateMenuCenter(const char *text, const int fontsize, const Color color) {
-    const float x = WINDOW_WIDTH/2.0f;
-    const float y = WINDOW_HEIGHT/2.0f;
+bool CreateMenuCenter(const char *text, const int fontsize, const Color color, const float factor) {
+    float x = WINDOW_WIDTH/2.0f;
+    float y = WINDOW_HEIGHT/2.0f;
     size_t length = strlen(text);
-    Rectangle border = {.x = x, .y = y, .width = length*fontsize*MENU_TEXTBOX_SCALE_FACTOR, .height = 10.0f + fontsize };
+    Rectangle border = {.x = x, .y = y, .width = length*fontsize*factor, .height = 10.0f + fontsize };
     Coordinate recalculated = RecalculateCenterRec(border);
-    border.x = recalculated.x;
-    border.y = recalculated.y;
+    x = recalculated.x;
+    y = recalculated.y;
+    border.x = x; border.y = y;
     DrawRectangleLinesEx(border, 3.0f, BLACK);
 
     // check for hover
     const int mx = GetMouseX(), my = GetMouseY();
     if (CheckCollision(mx, my, border)) {
+        if (IsMouseButtonReleased(MOUSE_BUTTON_LEFT)) return true;
         unsigned char r,g,b,a;
         r = ClampDown(((long)color.r + 50L), 255L);
         g = ClampDown(((long)color.g + 50L), 255L);
@@ -96,4 +101,5 @@ void CreateMenuCenter(const char *text, const int fontsize, const Color color) {
     } else {
         DrawText(text, x+10, y+5, fontsize, color);
     }
+    return false;
 }
