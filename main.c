@@ -28,6 +28,30 @@ int main(void)
 
     ApplicationState state = INIT;
 
+
+    const char *titles[] = {"Hello", "World", "LOL", "Meine", "Freunde"};
+    const size_t titlesSize = 5;
+
+    /* INIT STATES */
+
+    /* START STATES */
+
+    /* DECK STATES */
+
+    /* MENU STATES */
+
+    /* EDIT STATES */
+
+    Rectangle EDIT_selectedRect = (Rectangle){0,0,0,0};
+    Rectangle *EDIT_selectedRectPtr = &EDIT_selectedRect;
+
+    /* NEW STATES */
+
+    /* ENDED STATES */
+
+
+
+    /* MAIN EVENT LOOP */
     while (!WindowShouldClose()) {
         if (IsKeyPressed(KEY_Q)) state = ENDED;
         if (IsKeyPressed(KEY_ESCAPE)) state = ENDED;
@@ -42,6 +66,9 @@ int main(void)
                 BeginDrawing();
                 if (CreateMenuCenter("START", 65, BLACK, 0.80f)) {
                     state = MENU;
+                }
+                if (CreateMenu(600, 400, "QUIT", 30, BLACK, 0.80f)) {
+                    state = ENDED;
                 }
                 EndDrawing();
                 break;
@@ -58,6 +85,7 @@ int main(void)
                 };
                 const size_t menu_back_index = 3;
                 const size_t menu_deck_index = 0;
+                const size_t menu_edit_index = 2;
 
                 if (menus[menu_back_index]) {
                     state = START;
@@ -65,6 +93,10 @@ int main(void)
 
                 if (menus[menu_deck_index]) {
                     state = DECK;
+                }
+
+                if (menus[menu_edit_index]) {
+                    state = EDIT;
                 }
 
                 EndDrawing();
@@ -78,17 +110,23 @@ int main(void)
                     state = MENU;
                 }
 
-                const char *titles[] = {"Hello", "World", "LOL", "Meine", "Freunde"};
-                const size_t titlesSize = 5;
-                /* const Rectangle bounds = {.x = 20, .y = 20, .width = 100, .height = 100}; */
-                /* size_t _ = DeckView(&titles[0], titlesSize, bounds, 20, BLACK, 0.6); */
-
-                size_t res = DeckSelector(20, 20, titles, titlesSize, 25, BLACK, 21.2f);
+                size_t res = DeckSelector(20, 20, titles, titlesSize, 25, BLACK, 21.2f, NULL);
                 if (res != (size_t)-1) {
-                    fprintf(stderr, "Clicked ID: %zu\n", res);
-
+                    fprintf(stderr, "Clicked ID: %zu, Title: %s\n", res, titles[res]);
                 }
 
+                EndDrawing();
+                break;
+            case EDIT:
+                ClearBackground(RAYWHITE);
+                BeginDrawing();
+
+                res = DeckSelector(WINDOW_WIDTH/2.0f, WINDOW_HEIGHT/2.0f, titles, titlesSize, 25, BLACK, 21.2f, EDIT_selectedRectPtr);
+                if (res != (size_t)-1) {
+                    fprintf(stderr, "call\n");
+                }
+
+                DrawRectangleRec(*EDIT_selectedRectPtr, (Color){13,114,255,55});
                 EndDrawing();
                 break;
             case ENDED:

@@ -105,7 +105,7 @@ bool CreateMenuCenter(const char *text, const int fontsize, const Color color, c
 }
 
 
-size_t DeckSelector(const float x, const float y, const char **deckTitles, const size_t decksTotal, const int fontsize, const Color color, const float factor) {
+size_t DeckSelector(const float x, const float y, const char **deckTitles, const size_t decksTotal, const int fontsize, const Color color, const float factor, Rectangle *clickedTextBounds) {
 
     size_t maxLength = 0;
     for (size_t i = 0; i < decksTotal; i++) {
@@ -124,7 +124,12 @@ size_t DeckSelector(const float x, const float y, const char **deckTitles, const
         const Rectangle textBounds = (Rectangle){.x = viewBounds.x+3, .y = viewBounds.y + fontsize*1.1*i, .width = maxLength*factor, .height=fontsize*1.1};
         DrawText(title, viewBounds.x+3, viewBounds.y + fontsize*1.1*i, fontsize, color);
         if (CheckCollision(mx, my, textBounds)) {
-            if (IsMouseButtonReleased(MOUSE_BUTTON_LEFT)) return i;
+            if (IsMouseButtonReleased(MOUSE_BUTTON_LEFT)) {
+                if (clickedTextBounds != NULL) {
+                    (*clickedTextBounds) = textBounds;
+                }
+                return i;
+            }
             DrawRectangleRec(textBounds, (Color){.r = 57, .g = 219, .b = 247, .a = 20});
         }
     }
