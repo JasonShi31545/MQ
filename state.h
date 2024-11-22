@@ -8,6 +8,8 @@ typedef enum { // assume it's int
         START,
         DECK,
         MENU,
+        EDIT,
+        NEW,
         ENDED,
 } ApplicationState;
 

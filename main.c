@@ -5,8 +5,6 @@
 \____|__  /\_____\ \_/_   |____|   |___|  /\___  > \_____\ \_/____/|__/_____ \____/\___  >__|    |____|_  /\___  >   __/|____(____  /\___  >___  >__|_|  /\___  >___|  /__|  __
         \/        \__>/                 \/     \/         \__>              \/         \/               \/     \/|__|             \/     \/    \/      \/     \/     \/      \/
          */
-
-
 #include "coords.h"
 #include "state.h"
 #include "asciiart.h"
@@ -23,7 +21,7 @@ int main(void)
     SetConfigFlags(FLAG_MSAA_4X_HINT);
 
     Music bgm1 = LoadMusicStream("resources/effect.ogg");
-    SetMasterVolume(50);
+    SetMasterVolume(69);
     PlayMusicStream(bgm1);
 
     Sound hoverSound = LoadSound("resources/select.ogg");
@@ -43,13 +41,13 @@ int main(void)
 
                 BeginDrawing();
                 if (CreateMenuCenter("START", 65, BLACK, 0.80f)) {
-                    fprintf(stderr, "Clicked!");
                     state = MENU;
                 }
                 EndDrawing();
                 break;
             case MENU:
                 ClearBackground(RAYWHITE);
+                UpdateMusicStream(bgm1);
                 BeginDrawing();
 
                 bool menus[] = {
@@ -59,9 +57,36 @@ int main(void)
                     CreateMenu(30, 210, "BACK", 40, BLACK, 0.95),
                 };
                 const size_t menu_back_index = 3;
+                const size_t menu_deck_index = 0;
 
                 if (menus[menu_back_index]) {
                     state = START;
+                }
+
+                if (menus[menu_deck_index]) {
+                    state = DECK;
+                }
+
+                EndDrawing();
+                break;
+            case DECK:
+                ClearBackground(RAYWHITE);
+                BeginDrawing();
+
+
+                if (CreateMenu(30, 390, "Quit", 40 ,BLACK, 0.65)) {
+                    state = MENU;
+                }
+
+                const char *titles[] = {"Hello", "World", "LOL", "Meine", "Freunde"};
+                const size_t titlesSize = 5;
+                /* const Rectangle bounds = {.x = 20, .y = 20, .width = 100, .height = 100}; */
+                /* size_t _ = DeckView(&titles[0], titlesSize, bounds, 20, BLACK, 0.6); */
+
+                size_t res = DeckSelector(20, 20, titles, titlesSize, 25, BLACK, 21.2f);
+                if (res != (size_t)-1) {
+                    fprintf(stderr, "Clicked ID: %zu\n", res);
+
                 }
 
                 EndDrawing();

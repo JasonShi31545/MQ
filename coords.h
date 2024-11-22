@@ -26,6 +26,7 @@ bool CreateMenu(const float x, const float y, const char *text, const int fontsi
 bool CreateMenuCenter(const char *text, const int fontsize, const Color color, const float factor);
 
 
+size_t DeckSelector(const float x, const float y, const char **deckTitles, const size_t decksTotal, const int fontsize, const Color color, const float factor);
 
 
 #endif // MAIN_H_
